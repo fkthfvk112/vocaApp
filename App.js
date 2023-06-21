@@ -1,15 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import * as SQLite from 'expo-sqlite';
 import {useState, useEffect} from 'react';
-import * as FileSystem from 'expo-file-system';
-import { Asset } from 'expo-asset';
 import downLoadDb from './downLoadDb';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import ShowWordsScreen from './screens/ShowWordsScreen';
 
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [db, setDb] = useState(null);
-  const [datas, setDatas] = useState([]);
+  const [wordDatas, setWordDatas] = useState([]);
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -19,7 +21,7 @@ export default function App() {
     fetchData();
   },[])
 
-  const showData = async () => {
+  const setAllDatas = async () => {
     db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM words',
@@ -29,8 +31,7 @@ export default function App() {
           console.log("여기");
           if (rows && rows._array) {
             const words = rows._array;
-            console.log('words: ', words);
-            setDatas(words);
+            setWordDatas(words);
           }
         },
         (_, error) => {
@@ -40,16 +41,17 @@ export default function App() {
     });
   };
   
-  console.log('데이터스', datas);
+  console.log('단어 개수', wordDatas[0]);
   return (
-    <View style={styles.container}>
-      <Text>das</Text>
-      <Button title="다운로드 디비"  />
-      <Button title="클릭" />
-      <Button title="데이터 삽입" />
-      <Button title="데이터 보기" onPress={showData}/>
-      <StatusBar style="auto"/>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen}/>
+        <Stack.Screen name="ShowWordsScreen" component={ShowWordsScreen}/>
+      </Stack.Navigator>
+      <View>
+        <Text>광고</Text>
+      </View>
+    </NavigationContainer>
   );
 }
 

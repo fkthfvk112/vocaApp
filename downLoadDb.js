@@ -10,9 +10,9 @@ export default async function downLoadDb() {
   }
 
   await FileSystem.downloadAsync(
-    Asset.fromModule(require('./assets/temp1.db')).uri,
-    FileSystem.documentDirectory + 'SQLite/a.db'
+    Asset.fromModule(require('./assets/EnKoWords.db')).uri,
+    FileSystem.documentDirectory + 'SQLite/engVoca051.db'
   );
 
-  return SQLite.openDatabase('a.db');
+  return SQLite.openDatabase('engVoca051.db');
 };
