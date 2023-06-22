@@ -13,8 +13,12 @@ export default function HomeScreen({navigation}){
     fetchData();
   },[])
   
+  useEffect(()=>{
+    if(wordDatas&&wordDatas.length >= 10) navigation.push('ShowWordsScreen', {datas:wordDatas, dbObj:db})//처음 누르면
+  }, [wordDatas])
+  
   const setAllDatas = async () => {
-    await db.transaction(tx => {
+    db.transaction(tx => {
       tx.executeSql(
         'SELECT * FROM words',
         [],
@@ -33,27 +37,9 @@ export default function HomeScreen({navigation}){
     });
   };
 
-  const setDataPromise = function(){
-    return new Promise((resolve, reject)=>{
-      setAllDatas();
-      if(wordDatas&&wordDatas.length >= 10){
-        resolve("데이터 받아옴");
-      }
-      else{
-        reject(Error("실패"));//실패시 어떻게 처리할 것인가.
-      }
-    })
-  }
   function toShowWordsScreen(){//여기 수정
-    setDataPromise()
-      .then((text)=>{
-        console.log('성공', text);
-        navigation.push('ShowWordsScreen', {datas:wordDatas})//처음 누르면
-      }, (error)=>{
-        console.error("실패", error);
-      })
-    //setAllDatas();
-    //navigation.navigate('ShowWordsScreen');
+    setAllDatas();
+    //navigation.push('ShowWordsScreen', {datas:wordDatas})//처음 누르면
   }
 
   return (
