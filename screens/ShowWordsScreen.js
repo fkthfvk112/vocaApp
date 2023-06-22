@@ -13,7 +13,7 @@ export default function ShowWordsScreen({route}){
   const height80Percent = windowHeight * 0.23;
 
   const datas = route.params.datas;
-  const dbObj = route.params.dbObj;
+  const db = route.params.dbObj;
   //console.log("디비오브제", dbObj);
 
   const hidedKorean = {
@@ -26,20 +26,83 @@ export default function ShowWordsScreen({route}){
     color:'black'
   }
 
-  const [starToggle, setStarToggle] = useState(StarEmpty);
   const [koreanState, setKoreanState] = useState(hidedKorean);
   const [page, setPage] = useState(1);
-  const [wordEnd, setwordEnd] = useState();
+  const [wordEng, setwordEng] = useState();
   const [wordKor, setwordKor] = useState();
   const [seeKor, setSeeKor] = useState(false);
   const [totalPage, setTotalPage] = useState();
   const [pageText, setPageText] = useState(1);
 
+  const [starToggle, setStarToggle] = useState(StarEmpty);
+  const [starTable, setStarTable] = useState([]);
+  const [starRander, setstarRander] = useState({render:'okay'});
+
   useEffect(()=>{
-    setwordEnd(datas&&datas[page-1].eng);
+    makeStarDbTable();
+  })
+
+  useEffect(()=>{
+    setwordEng(datas&&datas[page-1].eng);
     setwordKor(datas&&datas[page-1].kor);
-    setTotalPage(datas.length)
+    setTotalPage(datas.length);
   },[page])
+
+  useEffect(()=>{//star
+    function SelectAllFromStard(callback){
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM staredWords`,
+          [],
+          (_, result) => {
+            const { rows } = result;
+            console.log("여기 로우 ", rows);
+            if (rows && rows._array) {
+              const words = rows._array;
+              setStarTable(words);
+              callback();
+            }
+          },
+          (_, error) => {
+            console.log('error : ', error);
+          }
+        );
+      });
+    }
+
+    const starToggleFunc =  ()=>{
+      const inStard = starTable.some((obj)=>{
+        return obj.eng == wordEng;
+      });
+      console.log("이즈 스타", inStard);
+      if(inStard){
+        console.log("글토오프")
+        setStarToggle(Star);
+      }
+      else{
+        console.log("토글온")
+        setStarToggle(StarEmpty);
+      } 
+    }
+
+    SelectAllFromStard(starToggleFunc);
+  }, [starRander, page])
+
+
+  function makeStarDbTable(){
+    db.transaction(tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS staredWords (eng TEXT , kor TEXT, insertedDate DATE)',
+        [],
+        (_, result) => {
+          console.log('Table created successfully.');
+        },
+        (_, error) => {
+          console.log('Error creating table:', error);
+        }
+      );
+    }, null, null, db.READ_WRITE);    
+  }
 
   function onClickLeft(){
     if(page >1){
@@ -53,17 +116,34 @@ export default function ShowWordsScreen({route}){
       !seeKor&&setKoreanState(hidedKorean);
     }
   }
+  
   function handleStar(){
     if(starToggle == StarEmpty){
-      /*db에서 찜 단어 삭제 작업
-      셋 작업도 axios 내에서 하기*/
-      setStarToggle(Star);
+      const isStartd = starTable.some((obj)=>{
+        obj&&obj.eng ===wordEng;
+      });
+      if(!isStartd){//테이블에 존재하지 않을 떄만 insert
+        db.transaction(tx => {
+          const currentDate = new Date();
+          const formattedDate = currentDate.toISOString().split('T')[0];
+          tx.executeSql(
+            'INSERT INTO staredWords (eng, kor, insertedDate) VALUES (?, ?, ?)',
+            [wordEng, wordKor, formattedDate],
+            (_, result) => {
+              console.log('Record inserted successfully.');
+            },
+            (_, error) => {
+              console.log('Error inserting record:', error);
+            }
+          );
+        });
+      }
     }
     else{
       /*db에서 찜 단어 삭제 작업
       셋 작업도 axios 내에서 하기*/
-      setStarToggle(StarEmpty)
     }
+    setstarRander({render:'okay'});
   }
 
   function hanldeKorean(){
@@ -94,7 +174,7 @@ export default function ShowWordsScreen({route}){
             asset={starToggle}
             onPress={handleStar}
           />
-          <Text style={{fontSize:30, marginTop:20}}>{wordEnd}</Text>
+          <Text style={{fontSize:30, marginTop:20}}>{wordEng}</Text>
           <View style={{flexDirection: 'row'}}>
             <Pressable style={[
               styles.triangle,
