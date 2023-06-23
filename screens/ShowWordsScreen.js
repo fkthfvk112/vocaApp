@@ -5,13 +5,9 @@ import Star from '../assets/star.svg';
 import StarEmpty from '../assets/star_empty.svg';
 import {  WithLocalSvg } from 'react-native-svg';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-
 //e0e1dd
 
 export default function ShowWordsScreen({route}){
-  const windowHeight = Dimensions.get('window').height;
-  const height80Percent = windowHeight * 0.23;
-
   const datas = route.params.datas;
   const db = route.params.dbObj;
   //console.log("디비오브제", dbObj);
@@ -36,7 +32,6 @@ export default function ShowWordsScreen({route}){
 
   const [starToggle, setStarToggle] = useState(StarEmpty);
   const [starTable, setStarTable] = useState([]);
-  const [starRander, setstarRander] = useState({render:'okay'});
 
   useEffect(()=>{
     makeStarDbTable();
@@ -48,7 +43,21 @@ export default function ShowWordsScreen({route}){
     setTotalPage(datas.length);
   },[page])
 
-  useEffect(()=>{//star
+  useEffect(()=>{//eng 바뀐 후 처리
+    let setInitialStart = ()=>{
+      const inStard = starTable.some((obj)=>{
+        return obj.eng == wordEng;
+      });
+      if(inStard){
+        setStarToggle(Star);
+      }
+      else{
+        setStarToggle(StarEmpty);
+      }
+    }
+    SelectAllFromStard(setInitialStart);
+  }, [wordEng])
+
     function SelectAllFromStard(callback){
       db.transaction(tx => {
         tx.executeSql(
@@ -71,22 +80,20 @@ export default function ShowWordsScreen({route}){
     }
 
     const starToggleFunc =  ()=>{
+      //console.log("실행됌");
       const inStard = starTable.some((obj)=>{
         return obj.eng == wordEng;
       });
-      console.log("이즈 스타", inStard);
-      if(inStard){
-        console.log("글토오프")
+      //console.log("이즈 스타", inStard);
+      if(!inStard){
+        console.log("토글온")
         setStarToggle(Star);
       }
       else{
-        console.log("토글온")
+        console.log("토글오프")
         setStarToggle(StarEmpty);
       } 
     }
-
-    SelectAllFromStard(starToggleFunc);
-  }, [starRander, page])
 
 
   function makeStarDbTable(){
@@ -123,6 +130,7 @@ export default function ShowWordsScreen({route}){
         obj&&obj.eng ===wordEng;
       });
       if(!isStartd){//테이블에 존재하지 않을 떄만 insert
+        console.log("삽입 실행");
         db.transaction(tx => {
           const currentDate = new Date();
           const formattedDate = currentDate.toISOString().split('T')[0];
@@ -140,10 +148,21 @@ export default function ShowWordsScreen({route}){
       }
     }
     else{
-      /*db에서 찜 단어 삭제 작업
-      셋 작업도 axios 내에서 하기*/
+      console.log("삭제 실행");
+      db.transaction(tx => {
+        tx.executeSql(
+          'DELETE FROM staredWords WHERE eng = ?',
+          [wordEng],
+          (_, result) => {
+            console.log('Record deleted successfully.');
+          },
+          (_, error) => {
+            console.log('Error deleting record:', error);
+          }
+        );
+      });      
     }
-    setstarRander({render:'okay'});
+    SelectAllFromStard(starToggleFunc);
   }
 
   function hanldeKorean(){

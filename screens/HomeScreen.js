@@ -16,6 +16,7 @@ export default function HomeScreen({navigation}){
   useEffect(()=>{
     if(wordDatas&&wordDatas.length >= 10) navigation.push('ShowWordsScreen', {datas:wordDatas, dbObj:db})//처음 누르면
   }, [wordDatas])
+
   
   const setAllDatas = async () => {
     db.transaction(tx => {
@@ -42,14 +43,15 @@ export default function HomeScreen({navigation}){
     //navigation.push('ShowWordsScreen', {datas:wordDatas})//처음 누르면
   }
 
+  function toStarWordsScreen(){
+    navigation.push('StarWordsScreen', {dbObj:db})//처음 누르면
+  }
   return (
     // <View style={styles.container}>
       <View>
-        <Text>das</Text>
-        <Button title="다운로드 디비"/>
-        <Button title="단어 보기" onPress={toShowWordsScreen}/>
-        <Button title="데이터 삽입" />
-        <Button title="데이터 보기"/>
+        <Button title="단어 순서대로 보기" onPress={toShowWordsScreen}/>
+        <Button title="단어 랜덤하게 보기 "/>
+        <Button title="찜한 단어 보기" onPress={toStarWordsScreen}/>
       </View>
     );
 }
