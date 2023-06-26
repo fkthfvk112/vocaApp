@@ -44,7 +44,7 @@ export default function App() {
   
   console.log('단어 개수', wordDatas[0]);
   return (
-    <NavigationContainer>
+    <NavigationContainer style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen}/>
         <Stack.Screen name="ShowWordsScreen" component={ShowWordsScreen}/>

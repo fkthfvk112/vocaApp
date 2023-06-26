@@ -10,8 +10,6 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 export default function ShowWordsScreen({route}){
   const datas = route.params.datas;
   const db = route.params.dbObj;
-  //console.log("디비오브제", dbObj);
-
   const hidedKorean = {
       color:'#cbccc8',
       backgroundColor:'#cbccc8',
@@ -30,11 +28,21 @@ export default function ShowWordsScreen({route}){
   const [totalPage, setTotalPage] = useState();
   const [pageText, setPageText] = useState(1);
 
-  const [starToggle, setStarToggle] = useState(StarEmpty);
+  const [starToggle, setStarToggle] = useState();
   const [starTable, setStarTable] = useState([]);
 
   useEffect(()=>{
     makeStarDbTable();
+    
+    const inStard = starTable.some((obj)=>{
+      return obj.eng == wordEng;
+    });
+    if(inStard){
+      setStarToggle(Star);
+    }
+    else{
+      setStarToggle(StarEmpty);
+    }
   })
 
   useEffect(()=>{
@@ -80,7 +88,6 @@ export default function ShowWordsScreen({route}){
     }
 
     const starToggleFunc =  ()=>{
-      //console.log("실행됌");
       const inStard = starTable.some((obj)=>{
         return obj.eng == wordEng;
       });
@@ -204,12 +211,14 @@ export default function ShowWordsScreen({route}){
                 styles.rightTriangle
               ]} onPress={onClickRight}/>
           </View>
-          <Text style={[koreanState, {fontSize:20, marginTop:10}]} onPress={hanldeKorean}>{wordKor}</Text>
+          <View style={{minHeight:70}}>
+            <Text style={[koreanState, {fontSize:20, marginTop:10}]} onPress={hanldeKorean}>{wordKor}</Text>
+          </View>
           <BouncyCheckbox
             textStyle={{
               textDecorationLine: "none",
             }}
-            style={{paddingTop:15}}
+            style={{paddingTop:0}}
             size={21}
             fillColor="skyblue"
             text="계속 뜻 보기"
