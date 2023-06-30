@@ -52,7 +52,7 @@ export default function HomeScreen({navigation}){
   }
 
   function toStarWordsScreen(){
-    navigation.push('StarWordsScreen', {dbObj:db})//처음 누르면
+    navigation.push('StarWordsScreen', {datas:wordDatas,dbObj:db})//처음 누르면
   }
   return (
     // <View style={styles.container}>

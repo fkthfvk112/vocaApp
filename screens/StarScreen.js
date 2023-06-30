@@ -20,10 +20,18 @@ function deleteCollectionFromTableByValue(db, value){
   });  
 }
 
-export default function StarScreen({route}){
+export default function StarScreen({route, navigation }){
     const [starDatas, setStarDatas] = useState([]);
     const db = route.params.dbObj;
 
+    function toStarQuizScreen(){
+      console.log("클릭");
+      let datas = {
+        allDatas:route.params.datas,
+        starDatas:starDatas
+      }
+      navigation.push('StarQuizScreen', datas);
+    }
     function deleteThis(ele){
       console.log(ele.eng)
       deleteCollectionFromTableByValue(db, ele.eng);
@@ -77,7 +85,7 @@ export default function StarScreen({route}){
         <ScrollView showsVerticalScrollIndicator={false}>
           {test}
         </ScrollView>
-        <TouchableOpacity style={styles.quizBtn}><Text>단어 퀴즈</Text></TouchableOpacity>
+        <TouchableOpacity onPress={toStarQuizScreen} style={styles.quizBtn}><Text>단어 퀴즈</Text></TouchableOpacity>
       </View>
     )
 }
