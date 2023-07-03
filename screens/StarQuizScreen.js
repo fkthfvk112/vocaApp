@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TouchableOpacity, Button, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, Button, StyleSheet, Text, View, ScrollView } from 'react-native';
 import shuffleArray from '../shuffleArray';
 
 export default function StarQuizScreen({route}){
@@ -97,12 +97,13 @@ export default function StarQuizScreen({route}){
     })
 
     console.log("틀림", wrongAns);
+
     function QuizComp(){
         if(!endQuiz){
             return(
                 <>
                 <Text>{time}</Text>
-                    <View style={styles.engContainer}>
+                    <View style={[styles.engContainer, {borderColor: '#89a7f5'}]}>
                         <Text style={{fontSize:25}}>{starDatas&&starDatas[page].eng}</Text>
                     </View>
                 {preAnsComp}
@@ -112,31 +113,35 @@ export default function StarQuizScreen({route}){
         else{
             let wrongArr = wrongAns&&wrongAns.map((ele)=>{
                 return(
-                <View key={ele.eng}>
-                    <Text>{ele.eng}</Text>
-                    <Text>{ele.kor}</Text>
-                    <Text>{ele.myAns}</Text>
-                </View>
+                        <View key={ele.eng} style={[styles.engContainer, {borderColor: '#ff8fa3'}]} >
+                            <Text style={{fontSize:30}}>{ele.eng}</Text>
+                            <Text style={{fontSize:20}}>{ele.kor}</Text>
+                            <Text  style={{marginTop:20, fontSize:13, color:'gray'}}>내가 고른 답</Text>
+                            <Text style={{fontSize:18, color:'#cbccc8'}}>{ele.myAns}</Text>
+                        </View>
                 )
             })
             
             console.log("끝");
             return(
                 <>
-                <Text>틀린 문제</Text>
+                <Text style={{color:"#ff8fa3", fontSize:30, margin:30, fontWeight:"bold"}}>오답 노트</Text>
                 {wrongArr}
                 </>
             )
         }
     }
+
     return(
         <View style={styles.container}>
-            <QuizComp></QuizComp>
+            <ScrollView contentContainerStyle={styles.quizContainer} showsVerticalScrollIndicator={false}>
+                <QuizComp></QuizComp>
             {/* <Text>{time}</Text>
             <View style={styles.engContainer}>
                 <Text style={{fontSize:25}}>{starDatas&&starDatas[page].eng}</Text>
             </View>
             {preAnsComp} */}
+            </ScrollView>
         </View>
     )
 }
@@ -150,12 +155,18 @@ const styles = StyleSheet.create({
         width:'100%',
         height:'100%'
       },
+
+    quizContainer:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor:'white',
+        width:'100%',
+    },
       engContainer:{
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2.5,
         borderRadius:5,
-        borderColor: '#86a5f7',
         padding:50,
         minWidth: "80%",
         maxWidth: "80%",

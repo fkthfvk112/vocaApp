@@ -3,6 +3,8 @@ import {  WithLocalSvg } from 'react-native-svg';
 import { TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
 import trashbin from '../assets/trash.svg';
 import Star from '../assets/star.svg';
+import showToast from '../utils/toast';
+import Toast from 'react-native-toast-message';
 
 
 function deleteCollectionFromTableByValue(db, value){
@@ -30,8 +32,15 @@ export default function StarScreen({route, navigation }){
         allDatas:route.params.datas,
         starDatas:starDatas
       }
-      navigation.push('StarQuizScreen', datas);
+      if(datas.starDatas&&datas.starDatas.length >= 1){
+        navigation.push('StarQuizScreen', datas);
+      }
+      else{
+        console.log("여기");
+        showToast('단어를 추가해 주세요!');
+      }
     }
+
     function deleteThis(ele){
       console.log(ele.eng)
       deleteCollectionFromTableByValue(db, ele.eng);
@@ -86,6 +95,7 @@ export default function StarScreen({route, navigation }){
           {test}
         </ScrollView>
         <TouchableOpacity onPress={toStarQuizScreen} style={styles.quizBtn}><Text>단어 퀴즈</Text></TouchableOpacity>
+        <Toast/>
       </View>
     )
 }
@@ -108,7 +118,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2.5,
     borderRadius:15,
-    borderColor: '#CCDAFF',
+    borderColor: '#ffdc5e',
     minWidth: 300,
     minHeight: 150,
     maxWidth:300,
@@ -122,6 +132,6 @@ const styles = StyleSheet.create({
     width:200,
     borderRadius:10,
     alignItems: 'center',
-    backgroundColor:'skyblue',
+    backgroundColor:'#ffa62b',
   },
 });

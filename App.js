@@ -8,12 +8,21 @@ import HomeScreen from './screens/HomeScreen';
 import ShowWordsScreen from './screens/ShowWordsScreen';
 import StarScreen from './screens/StarScreen';
 import StarQuizScreen from './screens/StarQuizScreen';
+import * as Speech from 'expo-speech';//구현
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [db, setDb] = useState(null);
   const [wordDatas, setWordDatas] = useState([]);
+
+
+  const handleSpeak = () => {
+      const thingToSay = 'speak';//영어로 변경
+      Speech.speak(thingToSay);
+  };
+
+
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -54,6 +63,7 @@ export default function App() {
 
       </Stack.Navigator>
       <View>
+        <Button onPress={handleSpeak} title="버튼"></Button>
         <Text>광고</Text>
       </View>
     </NavigationContainer>
