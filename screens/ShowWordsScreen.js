@@ -2,6 +2,8 @@ import React from 'react';
 import {useState, useEffect} from 'react';
 import {Button, View, Text, StyleSheet, Pressable, Modal, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import Star from '../assets/star.svg';
+import speaker from '../assets/speaker.svg'
+import speakWord from '../utils/tts';
 import StarEmpty from '../assets/star_empty.svg';
 import {  WithLocalSvg } from 'react-native-svg';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
@@ -43,7 +45,7 @@ export default function ShowWordsScreen({route}){
     else{
       setStarToggle(StarEmpty);
     }
-  })
+  }, [])
 
   useEffect(()=>{
     setwordEng(datas&&datas[page-1].eng);
@@ -214,18 +216,28 @@ export default function ShowWordsScreen({route}){
           <View style={{minHeight:70}}>
             <Text style={[koreanState, {fontSize:20, marginTop:10}]} onPress={hanldeKorean}>{wordKor}</Text>
           </View>
-          <BouncyCheckbox
-            textStyle={{
-              textDecorationLine: "none",
-            }}
-            style={{paddingTop:0}}
-            size={21}
-            fillColor="skyblue"
-            text="계속 뜻 보기"
-            onPress={seeKoreanAllways}
-            isChecked={seeKor}
-          />
+          <View>
+            <WithLocalSvg 
+              width={25}
+              height={25}
+              asset={speaker}
+              onPress={()=>speakWord(wordEng)}
+              style={{position:'relative', top:40, right:60}}
+            />
+            <BouncyCheckbox
+              textStyle={{
+                textDecorationLine: "none",
+              }}
+              size={21}
+              fillColor="skyblue"
+              text="계속 뜻 보기"
+              onPress={seeKoreanAllways}
+              isChecked={seeKor}
+            />
+
+          </View>
         </View>
+        
           <Text>{page}/{totalPage}</Text>
         <View style={{alignItems:'center', flexDirection: 'row'}}>
         <TextInput

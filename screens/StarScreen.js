@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import {  WithLocalSvg } from 'react-native-svg';
 import { TouchableOpacity, ScrollView, StyleSheet, Text, View } from 'react-native';
 import trashbin from '../assets/trash.svg';
+import speaker from '../assets/speaker.svg';
+import speakWord from '../utils/tts';
 import Star from '../assets/star.svg';
 import showToast from '../utils/toast';
 import Toast from 'react-native-toast-message';
@@ -85,6 +87,12 @@ export default function StarScreen({route, navigation }){
               </View>
               <Text style={{fontSize:25, marginBottom:10}}>{ele.eng}</Text>
               <Text style={{fontSize:18, marginBottom:20}}>{ele.kor}</Text>
+              <WithLocalSvg 
+                            width={25}
+                            height={25}
+                            asset={speaker}
+                            onPress={()=>speakWord(ele.eng)}
+                          />
             </View>
         )
     })

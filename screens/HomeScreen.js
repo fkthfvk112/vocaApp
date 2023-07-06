@@ -1,8 +1,9 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 import {useState, useEffect} from 'react';
 import downLoadDb from '../downLoadDb';
 import shuffleArray from '../shuffleArray';
-
+import { Dimensions } from 'react-native';
+import backImg from '../assets/wordCloud.png';
 export default function HomeScreen({navigation}){
   const [db, setDb] = useState(null);
   const [wordDatas, setWordDatas] = useState();
@@ -54,12 +55,32 @@ export default function HomeScreen({navigation}){
   function toStarWordsScreen(){
     navigation.push('StarWordsScreen', {datas:wordDatas,dbObj:db})//처음 누르면
   }
+
+  console.log(backImg, "백이미지")
   return (
     // <View style={styles.container}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Button title="단어 순서대로 보기" onPress={toShowWordsScreen}/>
-        <Button title="단어 랜덤하게 보기" onPress={toShowRandomWordsScreen}/>
-        <Button title="찜한 단어 보기" onPress={toStarWordsScreen}/>
+      <View style={{flex: 1,justifyContent: 'center', alignItems: 'center', backgroundColor:'white'}}>
+          <Text>수능 영단어</Text>
+          <TouchableOpacity onPress={toShowWordsScreen} style={styles.btn}><Text>단어</Text></TouchableOpacity>
+          <TouchableOpacity onPress={toShowRandomWordsScreen} style={styles.btn}><Text>랜덤 단어</Text></TouchableOpacity>
+          <TouchableOpacity onPress={toStarWordsScreen} style={styles.btn}><Text>내 단어장</Text></TouchableOpacity>
       </View>
     );
 }
+
+const windowWidth = Dimensions.get('window').width;
+
+const styles = StyleSheet.create({
+  btn:{
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'white',
+    width: windowWidth * 0.8,
+    height: 50,
+    borderColor:"skyblue",
+    borderWidth:3,
+    borderRadius:10,
+    margin:10,
+    elevation: 2
+  }
+})
